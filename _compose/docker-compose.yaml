@@ -43,3 +43,28 @@ services:
       - ${AWS_CREDENTIAL_DIR}:/root/.aws
       - ${KUBE_CONFIG_DIR}:/root/.kube
       - /var/run/docker.sock:/var/run/docker.sock
+
+  amplify:
+    privileged: true
+    container_name: amplify
+    build: 
+      context: ../node/
+      dockerfile: ./Dockerfile
+      args:
+        - PLATFORM=$CPU_ARCH
+    environment:
+      - NODE_ENV=devleopment
+    working_dir: /home/node/app
+    volumes:
+      - ${AWS_CREDENTIAL_DIR}:/root/.aws
+      - ${PROJECT_DIR}/github/thomasreulen/aws/amplify/react-tutorial:/home/node/app/      
+      - nodemods-amplify:/home/node/app/node_modules:rw
+    restart: always
+    command: [ "tail", "-F", "anything" ]
+    ports:
+      - 3000:3000
+      - 20002:20002
+
+   
+volumes:
+  nodemods-amplify:

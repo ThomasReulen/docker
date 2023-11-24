@@ -106,12 +106,12 @@ fi
 
 # check for rebuild base images
 if [ "$BUILD_BASEIMG" == "YES" ]; then     
-    docker build -f "${REPO_ROOT_DIR}go/Dockerfile-baseimage" -t cdk-go-baseimage ${REPO_ROOT_DIR}go/
+    BUILDKIT_PROGRESS=plain docker build -f "${REPO_ROOT_DIR}go/Dockerfile-baseimage" -t cdk-go-baseimage ${REPO_ROOT_DIR}go/
 fi
 
 # run and re-build dev image for $1 
 if [ "$BUILD" == "YES" ]; then    
-    docker-compose -f "${REPO_ROOT_DIR}_compose/docker-compose.yaml" up $CTX -d --build
+    BUILDKIT_PROGRESS=plain docker-compose -f "${REPO_ROOT_DIR}_compose/docker-compose.yaml" up $CTX -d --build
 else
     docker-compose -f "${REPO_ROOT_DIR}_compose/docker-compose.yaml" up $CTX -d 
 fi 
