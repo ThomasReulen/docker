@@ -2,20 +2,6 @@ version: "3.9"
 
 services:
 
-  go:
-    container_name: go
-    build: 
-      context: ../go/
-      dockerfile: ./Dockerfile
-      args:
-        - PLATFORM=$CPU_ARCH
-    environment: 
-      - TMP=/home/tom/code/tmp/
-    volumes: 
-      - ${PROJECT_DIR}/:/home/tom/code/dev/app/
-      - ${PROJECT_DIR}/github/thomasreulen/aws/cdk/go/:/home/tom/code/go/
-      - ${AWS_CREDENTIAL_DIR}:/root/.aws
-
   ubuntu:
     container_name: ubuntu    
     build: 
@@ -23,12 +9,36 @@ services:
       dockerfile: ./Dockerfile
       args:
         - PLATFORM=$CPU_ARCH
-    command: tail -F anything      
+    command: tail -F anything
+    privileged: true
     volumes: 
       - ${PROJECT_DIR}/:/home/tom/code/
       - ${AWS_CREDENTIAL_DIR}:/root/.aws
+      - ${SSH_DIR}:/root/.ssh
       - ${KUBE_CONFIG_DIR}:/root/.kube
       - /var/run/docker.sock:/var/run/docker.sock
+
+  ubuntuvpn:
+    container_name: ubuntuvpn
+    build: 
+      context: ../ubuntu/
+      dockerfile: ./Dockerfile
+      args:
+        - PLATFORM=$CPU_ARCH
+    command: tail -F anything
+    privileged: true
+    dns: 
+      - 127.0.0.11
+      - 172.31.0.2
+      - 172.31.25.120
+      - 172.31.42.234
+    volumes: 
+      - ${PROJECT_DIR}/:/home/tom/code/
+      - ${AWS_CREDENTIAL_DIR}:/root/.aws
+      - ${SSH_DIR}:/root/.ssh
+      - ${KUBE_CONFIG_DIR}:/root/.kube
+      - /var/run/docker.sock:/var/run/docker.sock
+
 
   cdk:
     container_name: cdk
@@ -39,10 +49,24 @@ services:
         - PLATFORM=$CPU_ARCH
     command: tail -F anything      
     volumes: 
-      - ${PROJECT_DIR}/:/home/tom/code/
+      - ${PROJECT_DIR}/${SUB_CONTEXT}:/home/node/app/
       - ${AWS_CREDENTIAL_DIR}:/root/.aws
-      - ${KUBE_CONFIG_DIR}:/root/.kube
       - /var/run/docker.sock:/var/run/docker.sock
+      - nodemods-cdk:/home/node/app/node_modules:rw
+
+  go:
+    container_name: go
+    build: 
+      context: ../go/
+      dockerfile: ./Dockerfile
+      args:
+        - PLATFORM=$CPU_ARCH
+    environment: 
+      - TMP=/home/tom/code/app/tmp/
+    volumes: 
+      - ${PROJECT_DIR}/:/home/tom/code/app/
+      - ${PROJECT_DIR}/github/thomasreulen/aws/cdk/go/:/home/tom/code/go/
+      - ${AWS_CREDENTIAL_DIR}:/root/.aws
 
   amplify:
     privileged: true
@@ -68,3 +92,4 @@ services:
    
 volumes:
   nodemods-amplify:
+  nodemods-cdk:

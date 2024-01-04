@@ -14,6 +14,7 @@ help () {
     echo "      -i|--with-base-img            build with base images"
     echo "      -p|--prune                    prune before starting"
     echo "      -a|--all                      force build images and prune, combines all params"
+    echo "      -s|--sub-context              project folder (e.g. for cdk project)"
     echo ""
     echo "--------------------------------------------------------------------------------------------"
 
@@ -29,6 +30,7 @@ BUILD_BASEIMG=NO
 HELP=NO
 ALL=NO
 PRUNE=NO
+export SUB_CONTEXT=""
 
 echo ""
 while [[ $# -gt 0 ]]; do  
@@ -51,6 +53,11 @@ while [[ $# -gt 0 ]]; do
       ;;    
     -a|--all)
       ALL=YES
+      shift # past argument
+      ;;    
+    -s|--sub-context)
+      export SUB_CONTEXT="$2"
+      shift # past argument
       shift # past argument
       ;;    
     # -s|--searchpath)

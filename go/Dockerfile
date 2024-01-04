@@ -1,13 +1,22 @@
-FROM --platform=linux/arm64 cdk-go-baseimage
+ARG PLATFORM
+FROM --platform=$PLATFORM cdk-go-baseimage
 
-WORKDIR /home/tom/code/dev/app/
+ARG PLATFORM
+
+WORKDIR /home/tom/code/app/
 
 ENV GOPROXY=direct
 
 RUN npm install -g aws-cdk aws-cdk-lib && \
-    wget "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip" && \    
-    unzip awscli-exe-linux-aarch64.zip && \
+    if [ "$PLATFORM" = "linux/arm64" ]; then \
+       curl "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip" -o "awscliv2.zip"; \
+    else \
+       curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"; \
+    fi && \
+    unzip awscliv2.zip && \
     ./aws/install && \
-    rm awscli-exe-linux-aarch64.zip
+    rm awscliv2.zip
 
-CMD /bin/sh -c 'while true; do sleep 2; done;'
+CMD tail -F anything
+
+    
