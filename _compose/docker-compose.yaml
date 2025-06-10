@@ -89,6 +89,22 @@ services:
       - 3000:3000
       - 20002:20002
 
+  php:
+    container_name: php
+    build: 
+      context: ../php/
+      dockerfile: ./Dockerfile
+      args:
+        - PLATFORM=$CPU_ARCH
+    #command: tail -F anything
+    privileged: true
+    ports:
+      - 80:80
+    volumes: 
+      - ${PROJECT_DIR}/:/var/www/html/
+      - ${AWS_CREDENTIAL_DIR}:/root/.aws
+      - ${AWS_CREDENTIAL_DIR}:/var/www/.aws
+      - ${SSH_DIR}:/root/.ssh
    
 volumes:
   nodemods-amplify:
